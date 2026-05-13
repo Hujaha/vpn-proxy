@@ -11,6 +11,7 @@ A lightweight 3x-ui–style proxy panel written in Go, with a UI inspired by [cl
 - ⚡ Inbound CRUD: **VMess**, **VLESS**, **Trojan**, **Shadowsocks**
   - Auto-generated UUIDs / passwords
   - TCP / WS / gRPC, TLS / Reality flags
+- 🧦 Plain **SOCKS5** and **HTTP CONNECT** proxies (with optional user/password auth) — drop-in replacement for dante / squid
 - 🔥 **UFW integration** — opens the inbound port automatically on create, removes it on delete
 - 🛠 **Xray config generator** + one-click `systemctl restart xray`
 - 🌗 Persistent **dark / light theme toggle** (claude.ai-inspired palette)

@@ -81,6 +81,20 @@ func ShareLink(in *models.Inbound, host string) string {
 		userInfo := base64.RawURLEncoding.EncodeToString([]byte(in.Method + ":" + in.Password))
 		return fmt.Sprintf("ss://%s@%s:%d#%s",
 			userInfo, host, in.Port, url.PathEscape(name))
+
+	case "socks":
+		auth := ""
+		if in.Username != "" {
+			auth = url.QueryEscape(in.Username) + ":" + url.QueryEscape(in.Password) + "@"
+		}
+		return fmt.Sprintf("socks5://%s%s:%d#%s", auth, host, in.Port, url.PathEscape(name))
+
+	case "http":
+		auth := ""
+		if in.Username != "" {
+			auth = url.QueryEscape(in.Username) + ":" + url.QueryEscape(in.Password) + "@"
+		}
+		return fmt.Sprintf("http://%s%s:%d#%s", auth, host, in.Port, url.PathEscape(name))
 	}
 	return ""
 }

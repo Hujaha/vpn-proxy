@@ -13,7 +13,7 @@ type User struct {
 type Inbound struct {
 	ID         int64     `json:"id"`
 	Tag        string    `json:"tag"`
-	Protocol   string    `json:"protocol"` // vmess, vless, trojan, shadowsocks
+	Protocol   string    `json:"protocol"` // vmess, vless, trojan, shadowsocks, socks, http
 	Listen     string    `json:"listen"`
 	Port       int       `json:"port"`
 	Network    string    `json:"network"`  // tcp, ws, grpc
@@ -21,7 +21,8 @@ type Inbound struct {
 	Remark     string    `json:"remark"`
 	Enabled    bool      `json:"enabled"`
 	UUID       string    `json:"uuid"`     // for vmess/vless
-	Password   string    `json:"password"` // for trojan/ss
+	Username   string    `json:"username"` // for socks/http auth
+	Password   string    `json:"password"` // for trojan/ss/socks/http
 	Method     string    `json:"method"`   // for ss (e.g. aes-128-gcm)
 	WSPath     string    `json:"ws_path"`
 	SNI        string    `json:"sni"`

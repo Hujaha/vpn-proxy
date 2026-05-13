@@ -69,6 +69,20 @@ func buildInbound(in models.Inbound) map[string]any {
 		settings["method"] = method
 		settings["password"] = in.Password
 		settings["network"] = "tcp,udp"
+	case "socks":
+		settings["udp"] = true
+		settings["ip"] = "127.0.0.1"
+		if in.Username != "" {
+			settings["auth"] = "password"
+			settings["accounts"] = []map[string]any{{"user": in.Username, "pass": in.Password}}
+		} else {
+			settings["auth"] = "noauth"
+		}
+	case "http":
+		if in.Username != "" {
+			settings["accounts"] = []map[string]any{{"user": in.Username, "pass": in.Password}}
+		}
+		settings["allowTransparent"] = false
 	}
 
 	stream := map[string]any{

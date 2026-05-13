@@ -122,6 +122,7 @@ type inboundReq struct {
 	Remark   string `json:"remark"`
 	Enabled  bool   `json:"enabled"`
 	UUID     string `json:"uuid"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 	Method   string `json:"method"`
 	WSPath   string `json:"ws_path"`
@@ -135,7 +136,7 @@ func (r *inboundReq) toModel() *models.Inbound {
 		Tag: r.Tag, Protocol: r.Protocol, Listen: defaultStr(r.Listen, "0.0.0.0"),
 		Port: r.Port, Network: defaultStr(r.Network, "tcp"),
 		Security: defaultStr(r.Security, "none"), Remark: r.Remark, Enabled: r.Enabled,
-		UUID: r.UUID, Password: r.Password, Method: r.Method, WSPath: r.WSPath,
+		UUID: r.UUID, Username: r.Username, Password: r.Password, Method: r.Method, WSPath: r.WSPath,
 		SNI: r.SNI, Flow: r.Flow,
 	}
 }
@@ -387,7 +388,7 @@ func GetHost(c *gin.Context) {
 
 func validProtocol(p string) bool {
 	switch p {
-	case "vmess", "vless", "trojan", "shadowsocks":
+	case "vmess", "vless", "trojan", "shadowsocks", "socks", "http":
 		return true
 	}
 	return false
@@ -401,7 +402,8 @@ func defaultStr(s, d string) string {
 }
 
 func inboundProto(in *models.Inbound) string {
-	if in.Protocol == "shadowsocks" {
+	switch in.Protocol {
+	case "shadowsocks", "socks":
 		return "" // both tcp+udp
 	}
 	return "tcp"
@@ -423,6 +425,12 @@ func autoFill(in *models.Inbound) {
 		}
 		if in.Method == "" {
 			in.Method = "aes-128-gcm"
+		}
+	case "socks", "http":
+		// username/password are optional; if user provided a username
+		// without a password, auto-generate the password.
+		if in.Username != "" && in.Password == "" {
+			in.Password = randomToken(12)
 		}
 	}
 	if in.Tag == "" {

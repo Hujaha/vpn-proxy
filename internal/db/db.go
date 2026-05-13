@@ -46,6 +46,7 @@ func migrate() error {
 			remark TEXT NOT NULL DEFAULT '',
 			enabled INTEGER NOT NULL DEFAULT 1,
 			uuid TEXT NOT NULL DEFAULT '',
+			username TEXT NOT NULL DEFAULT '',
 			password TEXT NOT NULL DEFAULT '',
 			method TEXT NOT NULL DEFAULT '',
 			ws_path TEXT NOT NULL DEFAULT '/',
@@ -66,6 +67,8 @@ func migrate() error {
 			return fmt.Errorf("migrate: %w", err)
 		}
 	}
+	// Backfill columns added after the initial release.
+	_, _ = DB.Exec(`ALTER TABLE inbounds ADD COLUMN username TEXT NOT NULL DEFAULT ''`)
 	return nil
 }
 
@@ -97,7 +100,7 @@ func UpdateUserPassword(username, hash string) error {
 
 func ListInbounds() ([]models.Inbound, error) {
 	rows, err := DB.Query(`SELECT id, tag, protocol, listen, port, network, security, remark, enabled,
-		uuid, password, method, ws_path, sni, flow, up_bytes, down_bytes, created_at, updated_at
+		uuid, username, password, method, ws_path, sni, flow, up_bytes, down_bytes, created_at, updated_at
 		FROM inbounds ORDER BY id DESC`)
 	if err != nil {
 		return nil, err
@@ -108,7 +111,7 @@ func ListInbounds() ([]models.Inbound, error) {
 		var i models.Inbound
 		var enabled int
 		if err := rows.Scan(&i.ID, &i.Tag, &i.Protocol, &i.Listen, &i.Port, &i.Network, &i.Security,
-			&i.Remark, &enabled, &i.UUID, &i.Password, &i.Method, &i.WSPath, &i.SNI, &i.Flow,
+			&i.Remark, &enabled, &i.UUID, &i.Username, &i.Password, &i.Method, &i.WSPath, &i.SNI, &i.Flow,
 			&i.UpBytes, &i.DownBytes, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
@@ -120,12 +123,12 @@ func ListInbounds() ([]models.Inbound, error) {
 
 func GetInbound(id int64) (*models.Inbound, error) {
 	row := DB.QueryRow(`SELECT id, tag, protocol, listen, port, network, security, remark, enabled,
-		uuid, password, method, ws_path, sni, flow, up_bytes, down_bytes, created_at, updated_at
+		uuid, username, password, method, ws_path, sni, flow, up_bytes, down_bytes, created_at, updated_at
 		FROM inbounds WHERE id = ?`, id)
 	var i models.Inbound
 	var enabled int
 	if err := row.Scan(&i.ID, &i.Tag, &i.Protocol, &i.Listen, &i.Port, &i.Network, &i.Security,
-		&i.Remark, &enabled, &i.UUID, &i.Password, &i.Method, &i.WSPath, &i.SNI, &i.Flow,
+		&i.Remark, &enabled, &i.UUID, &i.Username, &i.Password, &i.Method, &i.WSPath, &i.SNI, &i.Flow,
 		&i.UpBytes, &i.DownBytes, &i.CreatedAt, &i.UpdatedAt); err != nil {
 		return nil, err
 	}
@@ -137,11 +140,11 @@ func CreateInbound(in *models.Inbound) (int64, error) {
 	in.CreatedAt = time.Now()
 	in.UpdatedAt = in.CreatedAt
 	res, err := DB.Exec(`INSERT INTO inbounds
-		(tag, protocol, listen, port, network, security, remark, enabled, uuid, password, method,
+		(tag, protocol, listen, port, network, security, remark, enabled, uuid, username, password, method,
 		 ws_path, sni, flow, up_bytes, down_bytes, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)`,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)`,
 		in.Tag, in.Protocol, in.Listen, in.Port, in.Network, in.Security, in.Remark, boolToInt(in.Enabled),
-		in.UUID, in.Password, in.Method, in.WSPath, in.SNI, in.Flow, in.CreatedAt, in.UpdatedAt)
+		in.UUID, in.Username, in.Password, in.Method, in.WSPath, in.SNI, in.Flow, in.CreatedAt, in.UpdatedAt)
 	if err != nil {
 		return 0, err
 	}
@@ -151,10 +154,10 @@ func CreateInbound(in *models.Inbound) (int64, error) {
 func UpdateInbound(in *models.Inbound) error {
 	in.UpdatedAt = time.Now()
 	_, err := DB.Exec(`UPDATE inbounds SET tag=?, protocol=?, listen=?, port=?, network=?, security=?,
-		remark=?, enabled=?, uuid=?, password=?, method=?, ws_path=?, sni=?, flow=?, updated_at=?
+		remark=?, enabled=?, uuid=?, username=?, password=?, method=?, ws_path=?, sni=?, flow=?, updated_at=?
 		WHERE id=?`,
 		in.Tag, in.Protocol, in.Listen, in.Port, in.Network, in.Security, in.Remark, boolToInt(in.Enabled),
-		in.UUID, in.Password, in.Method, in.WSPath, in.SNI, in.Flow, in.UpdatedAt, in.ID)
+		in.UUID, in.Username, in.Password, in.Method, in.WSPath, in.SNI, in.Flow, in.UpdatedAt, in.ID)
 	return err
 }
 

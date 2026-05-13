@@ -46,6 +46,8 @@
           <option value="vmess">VMess</option>
           <option value="trojan">Trojan</option>
           <option value="shadowsocks">Shadowsocks</option>
+          <option value="socks">SOCKS5</option>
+          <option value="http">HTTP CONNECT</option>
         </select>
       </label>
       <label>Port<input type="number" name="port" min="1" max="65535" required></label>
@@ -65,7 +67,8 @@
         </select>
       </label>
       <label data-for="vmess,vless">UUID<input name="uuid" placeholder="auto"></label>
-      <label data-for="trojan,shadowsocks">Password<input name="password" placeholder="auto"></label>
+      <label data-for="socks,http">Username<input name="username" placeholder="leave empty for no auth"></label>
+      <label data-for="trojan,shadowsocks,socks,http">Password<input name="password" placeholder="auto"></label>
       <label data-for="shadowsocks">Method
         <select name="method">
           <option value="aes-128-gcm">aes-128-gcm</option>
