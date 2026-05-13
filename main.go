@@ -69,8 +69,13 @@ func main() {
 		api.POST("/inbounds", handlers.CreateInbound)
 		api.PUT("/inbounds/:id", handlers.UpdateInbound)
 		api.DELETE("/inbounds/:id", handlers.DeleteInbound)
+		api.GET("/inbounds/:id/share", handlers.InboundShare)
+		api.GET("/inbounds/:id/qr", handlers.InboundQR)
 		api.POST("/xray/restart", handlers.RestartXray)
 		api.GET("/xray/config", handlers.XrayConfig)
+		api.GET("/xray/reality-keys", handlers.GenerateRealityKeys)
+		api.GET("/settings/host", handlers.GetHost)
+		api.POST("/settings/host", handlers.SetHost)
 		api.POST("/account/password", handlers.ChangePassword)
 	}
 

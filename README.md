@@ -15,8 +15,26 @@ A lightweight 3x-ui–style proxy panel written in Go, with a UI inspired by [cl
 - 🛠 **Xray config generator** + one-click `systemctl restart xray`
 - 🌗 Persistent **dark / light theme toggle** (claude.ai-inspired palette)
 - 📦 Single static binary, embedded HTML/CSS/JS, SQLite (no CGO)
+- 🔗 **Client share links** (`vless://`, `vmess://`, `ss://`, `trojan://`) + **QR codes**
+- 🔑 One-click **Reality X25519 keypair** generator
 
 ## Quick start
+
+### One-line installer (Linux + systemd)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/Hujaha/vpn-proxy/main/install.sh | sudo bash
+```
+
+This installs Go (if missing), clones the repo to `/opt/vpn-proxy`, builds the binary, registers a `vpn-proxy.service`, and opens port 2053 in UFW.
+
+### Docker
+
+```bash
+docker compose up -d
+```
+
+### Manual build
 
 ```bash
 git clone https://github.com/Hujaha/vpn-proxy.git

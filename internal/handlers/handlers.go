@@ -15,6 +15,7 @@ import (
 	"github.com/Hujaha/vpn-proxy/internal/xray"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	qrcode "github.com/skip2/go-qrcode"
 )
 
 // Page renderers ---------------------------------------------------------
@@ -262,6 +263,89 @@ func XrayConfig(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, xray.BuildConfig(inbounds))
+}
+
+func InboundShare(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad id"})
+		return
+	}
+	in, err := db.GetInbound(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	host := db.GetSetting("server_host", "")
+	if host == "" {
+		host = c.Request.Host
+		if i := strings.LastIndex(host, ":"); i > 0 {
+			host = host[:i]
+		}
+	}
+	link := xray.ShareLink(in, host)
+	c.JSON(http.StatusOK, gin.H{"link": link, "host": host})
+}
+
+func InboundQR(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	in, err := db.GetInbound(id)
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	host := db.GetSetting("server_host", "")
+	if host == "" {
+		host = c.Request.Host
+		if i := strings.LastIndex(host, ":"); i > 0 {
+			host = host[:i]
+		}
+	}
+	link := xray.ShareLink(in, host)
+	if link == "" {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	png, err := qrcode.Encode(link, qrcode.Medium, 320)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.Data(http.StatusOK, "image/png", png)
+}
+
+func GenerateRealityKeys(c *gin.Context) {
+	keys, err := xray.GenerateRealityKeys()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, keys)
+}
+
+type hostReq struct {
+	Host string `json:"host"`
+}
+
+func SetHost(c *gin.Context) {
+	var r hostReq
+	if err := c.ShouldBindJSON(&r); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		return
+	}
+	if err := db.SetSetting("server_host", strings.TrimSpace(r.Host)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ok": true, "host": r.Host})
+}
+
+func GetHost(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"host": db.GetSetting("server_host", "")})
 }
 
 // Helpers ----------------------------------------------------------------

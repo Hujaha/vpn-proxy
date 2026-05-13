@@ -26,6 +26,15 @@
       </form>
     </div>
     <div class="card">
+      <h3>Public host</h3>
+      <p class="muted small">Used in generated share links and QR codes. Leave blank to use the request host.</p>
+      <form id="host-form">
+        <label>Server address (IP or domain)<input name="host" placeholder="example.com"></label>
+        <button class="btn-primary" type="submit">Save</button>
+        <div class="form-error" id="host-msg"></div>
+      </form>
+    </div>
+    <div class="card">
       <h3>Xray</h3>
       <p class="muted small">Apply pending changes by writing the configuration and restarting Xray.</p>
       <button class="btn-primary" id="restart-xray">Restart Xray now</button>

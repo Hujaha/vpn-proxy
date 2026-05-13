@@ -17,6 +17,28 @@ document.getElementById('pw-form').addEventListener('submit', async (e) => {
   }
 });
 
+(async () => {
+  try {
+    const { host } = await api.get('/api/settings/host');
+    document.querySelector('#host-form [name=host]').value = host || '';
+  } catch {}
+})();
+
+document.getElementById('host-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const msg = document.getElementById('host-msg');
+  msg.textContent = '';
+  try {
+    await api.send('POST', '/api/settings/host', { host: fd.get('host') });
+    msg.style.color = 'var(--success)';
+    msg.textContent = 'Saved';
+  } catch (err) {
+    msg.style.color = 'var(--danger)';
+    msg.textContent = err.message;
+  }
+});
+
 document.getElementById('restart-xray').addEventListener('click', async () => {
   try { await api.send('POST', '/api/xray/restart'); alert('Xray restarted'); }
   catch (e) { alert('Failed: ' + e.message); }

@@ -63,6 +63,7 @@ async function load() {
         <td>${i.security}</td>
         <td>${pill(i.enabled, i.enabled ? 'enabled' : 'disabled')}</td>
         <td><div class="row-actions">
+          <button class="btn-ghost" data-share>Share</button>
           <button class="btn-ghost" data-edit>Edit</button>
           <button class="btn-danger" data-del>Delete</button>
         </div></td>
@@ -71,6 +72,8 @@ async function load() {
       btn.addEventListener('click', () => openEdit(parseInt(btn.closest('tr').dataset.id, 10))));
     tbody.querySelectorAll('[data-del]').forEach(btn =>
       btn.addEventListener('click', () => del(parseInt(btn.closest('tr').dataset.id, 10))));
+    tbody.querySelectorAll('[data-share]').forEach(btn =>
+      btn.addEventListener('click', () => share(parseInt(btn.closest('tr').dataset.id, 10))));
     window._inbounds = items;
   } catch (e) {
     tbody.innerHTML = `<tr><td colspan="8" class="muted center">Failed: ${escapeHtml(e.message)}</td></tr>`;
@@ -92,6 +95,33 @@ function openEdit(id) {
   applyProtocolVisibility();
   dialog.showModal();
 }
+
+async function share(id) {
+  try {
+    const { link } = await api.get('/api/inbounds/' + id + '/share');
+    const dlg = document.getElementById('share-dialog');
+    document.getElementById('share-link').value = link;
+    document.getElementById('share-qr').src = '/api/inbounds/' + id + '/qr?t=' + Date.now();
+    dlg.showModal();
+  } catch (e) { alert('Failed: ' + e.message); }
+}
+
+document.getElementById('copy-link').addEventListener('click', async () => {
+  const v = document.getElementById('share-link').value;
+  try { await navigator.clipboard.writeText(v); }
+  catch { document.getElementById('share-link').select(); document.execCommand('copy'); }
+  const btn = document.getElementById('copy-link');
+  const old = btn.textContent;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = old, 1200);
+});
+
+document.getElementById('gen-reality')?.addEventListener('click', async () => {
+  try {
+    const k = await api.get('/api/xray/reality-keys');
+    alert('Reality keys generated:\n\nPrivate: ' + k.private_key + '\n\nPublic: ' + k.public_key + '\n\n(Save these — private key goes into Xray config, public into the client.)');
+  } catch (e) { alert('Failed: ' + e.message); }
+});
 
 async function del(id) {
   if (!confirm('Delete this inbound? The port will also be removed from UFW.')) return;

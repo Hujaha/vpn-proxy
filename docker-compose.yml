@@ -1,0 +1,13 @@
+services:
+  vpn-proxy:
+    build: .
+    image: hujaha/vpn-proxy:latest
+    container_name: vpn-proxy
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/data
+      - /usr/local/etc/xray:/usr/local/etc/xray
+    environment:
+      VPN_PROXY_ADDR: ":2053"
+      VPN_PROXY_DB: "/data/vpn-proxy.db"

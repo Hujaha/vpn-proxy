@@ -74,6 +74,10 @@
         </select>
       </label>
       <label data-for="vless">Flow<input name="flow" placeholder="xtls-rprx-vision"></label>
+      <label data-for="vless,vmess,trojan" class="row-inline">
+        <span>Reality keys</span>
+        <button type="button" class="btn-ghost small-btn" id="gen-reality">Generate</button>
+      </label>
       <label data-for="vmess,vless,trojan,shadowsocks">SNI<input name="sni"></label>
       <label data-for="vmess,vless,trojan">WS Path<input name="ws_path" placeholder="/"></label>
       <label class="switch">
@@ -91,6 +95,21 @@
     </footer>
     <input type="hidden" name="id">
   </form>
+</dialog>
+
+<dialog id="share-dialog" class="dialog share-dialog">
+  <header class="dialog-header">
+    <h2>Share inbound</h2>
+    <button type="button" class="icon-btn" onclick="this.closest('dialog').close()">✕</button>
+  </header>
+  <div class="dialog-body share-body">
+    <img id="share-qr" alt="QR code" class="share-qr">
+    <div class="share-link-row">
+      <input id="share-link" readonly>
+      <button id="copy-link" class="btn-primary" type="button">Copy</button>
+    </div>
+    <p class="muted small">Scan the QR code with your client app, or copy the link.</p>
+  </div>
 </dialog>
 
 <script src="/static/js/app.js"></script>

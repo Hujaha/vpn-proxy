@@ -344,6 +344,22 @@ form .switch input { width: 16px; height: 16px; accent-color: var(--accent); }
   border-radius: 0 0 var(--radius) var(--radius);
 }
 
+.share-dialog { width: min(420px, 92vw); }
+.share-body { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.share-qr {
+  width: 280px; height: 280px;
+  background: #fff; padding: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.share-link-row { display: flex; gap: 8px; width: 100%; }
+.share-link-row input {
+  flex: 1; font-family: var(--font-mono); font-size: 12px;
+}
+.small-btn { padding: 4px 10px; font-size: 12px; }
+.row-inline { flex-direction: row !important; align-items: center; justify-content: space-between; }
+.row-inline span { color: var(--muted); font-size: 12.5px; }
+
 /* Code block */
 .code-block {
   background: var(--surface-2);
