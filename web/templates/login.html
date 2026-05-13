@@ -1,0 +1,48 @@
+{{define "login.html"}}<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · vpn-proxy</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="auth-body">
+<div class="auth-card">
+  <div class="auth-brand">
+    <div class="brand-mark">vp</div>
+    <div class="brand-name">vpn-proxy</div>
+  </div>
+  <h1>Welcome back</h1>
+  <p class="muted">Sign in to manage your proxies.</p>
+  <form id="login-form">
+    <label>Username
+      <input type="text" name="username" autocomplete="username" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn-primary" type="submit">Sign in</button>
+    <div class="form-error" id="login-error"></div>
+  </form>
+  <button id="theme-toggle" class="theme-btn auth-theme" title="Toggle theme">
+    <span class="theme-icon-dark">◐</span>
+    <span class="theme-icon-light">◑</span>
+  </button>
+</div>
+<script src="/static/js/app.js"></script>
+<script>
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = Object.fromEntries(fd.entries());
+  const res = await fetch('/api/login', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+  if (res.ok) { location.href = '/dashboard'; return; }
+  const j = await res.json().catch(() => ({}));
+  document.getElementById('login-error').textContent = j.error || 'Failed to sign in';
+});
+</script>
+</body>
+</html>{{end}}

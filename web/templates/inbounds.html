@@ -1,0 +1,99 @@
+{{define "inbounds.html"}}<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.title}} · vpn-proxy</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+{{template "sidebar" .}}
+<main class="main">
+  <header class="page-header">
+    <div>
+      <h1>Inbounds</h1>
+      <p class="muted">Manage proxy listeners.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary" id="new-inbound">＋ New inbound</button>
+    </div>
+  </header>
+  <section class="card no-pad">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th><th>Tag</th><th>Protocol</th><th>Port</th>
+          <th>Network</th><th>Security</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="inbound-rows"><tr><td colspan="8" class="muted center">Loading…</td></tr></tbody>
+    </table>
+  </section>
+</main>
+
+<dialog id="inbound-dialog" class="dialog">
+  <form id="inbound-form" method="dialog">
+    <header class="dialog-header">
+      <h2 id="dialog-title">New inbound</h2>
+      <button type="button" class="icon-btn" data-close>✕</button>
+    </header>
+    <div class="dialog-body grid two">
+      <label>Remark<input name="remark" placeholder="My VLESS"></label>
+      <label>Tag<input name="tag" placeholder="auto"></label>
+      <label>Protocol
+        <select name="protocol" id="f-protocol">
+          <option value="vless">VLESS</option>
+          <option value="vmess">VMess</option>
+          <option value="trojan">Trojan</option>
+          <option value="shadowsocks">Shadowsocks</option>
+        </select>
+      </label>
+      <label>Port<input type="number" name="port" min="1" max="65535" required></label>
+      <label>Listen<input name="listen" placeholder="0.0.0.0"></label>
+      <label>Network
+        <select name="network">
+          <option value="tcp">tcp</option>
+          <option value="ws">ws</option>
+          <option value="grpc">grpc</option>
+        </select>
+      </label>
+      <label>Security
+        <select name="security">
+          <option value="none">none</option>
+          <option value="tls">tls</option>
+          <option value="reality">reality</option>
+        </select>
+      </label>
+      <label data-for="vmess,vless">UUID<input name="uuid" placeholder="auto"></label>
+      <label data-for="trojan,shadowsocks">Password<input name="password" placeholder="auto"></label>
+      <label data-for="shadowsocks">Method
+        <select name="method">
+          <option value="aes-128-gcm">aes-128-gcm</option>
+          <option value="aes-256-gcm">aes-256-gcm</option>
+          <option value="chacha20-ietf-poly1305">chacha20-ietf-poly1305</option>
+        </select>
+      </label>
+      <label data-for="vless">Flow<input name="flow" placeholder="xtls-rprx-vision"></label>
+      <label data-for="vmess,vless,trojan,shadowsocks">SNI<input name="sni"></label>
+      <label data-for="vmess,vless,trojan">WS Path<input name="ws_path" placeholder="/"></label>
+      <label class="switch">
+        <input type="checkbox" name="enabled" checked>
+        <span>Enabled</span>
+      </label>
+      <label class="switch">
+        <input type="checkbox" name="ufw" checked>
+        <span>Open port in UFW</span>
+      </label>
+    </div>
+    <footer class="dialog-footer">
+      <button type="button" class="btn-ghost" data-close>Cancel</button>
+      <button type="submit" class="btn-primary">Save</button>
+    </footer>
+    <input type="hidden" name="id">
+  </form>
+</dialog>
+
+<script src="/static/js/app.js"></script>
+<script src="/static/js/inbounds.js"></script>
+</body>
+</html>{{end}}

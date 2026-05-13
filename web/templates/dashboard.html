@@ -1,0 +1,70 @@
+{{define "dashboard.html"}}<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.title}} · vpn-proxy</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+{{template "sidebar" .}}
+<main class="main">
+  <header class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="muted">System overview and proxy status.</p>
+    </div>
+    <div class="header-actions">
+      <button id="restart-xray" class="btn-ghost">Restart Xray</button>
+    </div>
+  </header>
+  <section class="grid">
+    <div class="card stat">
+      <div class="stat-label">CPU</div>
+      <div class="stat-value" id="stat-cpu">—</div>
+      <div class="bar"><div class="bar-fill" id="bar-cpu"></div></div>
+      <div class="stat-sub" id="stat-cpu-sub">—</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">Memory</div>
+      <div class="stat-value" id="stat-mem">—</div>
+      <div class="bar"><div class="bar-fill" id="bar-mem"></div></div>
+      <div class="stat-sub" id="stat-mem-sub">—</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">Disk</div>
+      <div class="stat-value" id="stat-disk">—</div>
+      <div class="bar"><div class="bar-fill" id="bar-disk"></div></div>
+      <div class="stat-sub" id="stat-disk-sub">—</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">Inbounds</div>
+      <div class="stat-value" id="stat-inbounds">—</div>
+      <div class="stat-sub" id="stat-inbounds-sub">enabled</div>
+    </div>
+  </section>
+  <section class="grid two">
+    <div class="card">
+      <h3>System</h3>
+      <dl class="kv">
+        <dt>Hostname</dt><dd id="i-host">—</dd>
+        <dt>Platform</dt><dd id="i-platform">—</dd>
+        <dt>Uptime</dt><dd id="i-uptime">—</dd>
+        <dt>Load avg</dt><dd id="i-load">—</dd>
+        <dt>Network ↑/↓</dt><dd id="i-net">—</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>Firewall</h3>
+      <dl class="kv">
+        <dt>UFW available</dt><dd id="i-ufw-avail">—</dd>
+        <dt>UFW status</dt><dd id="i-ufw">—</dd>
+      </dl>
+      <p class="muted small">Open ports are managed automatically when you create or delete inbounds with the UFW switch enabled.</p>
+    </div>
+  </section>
+</main>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>{{end}}

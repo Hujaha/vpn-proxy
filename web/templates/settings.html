@@ -1,0 +1,40 @@
+{{define "settings.html"}}<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.title}} · vpn-proxy</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+{{template "sidebar" .}}
+<main class="main">
+  <header class="page-header">
+    <div>
+      <h1>Settings</h1>
+      <p class="muted">Account & system controls.</p>
+    </div>
+  </header>
+  <section class="grid two">
+    <div class="card">
+      <h3>Change password</h3>
+      <form id="pw-form">
+        <label>Current password<input type="password" name="old" required></label>
+        <label>New password<input type="password" name="new" minlength="6" required></label>
+        <button class="btn-primary" type="submit">Update</button>
+        <div class="form-error" id="pw-msg"></div>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Xray</h3>
+      <p class="muted small">Apply pending changes by writing the configuration and restarting Xray.</p>
+      <button class="btn-primary" id="restart-xray">Restart Xray now</button>
+      <h4 style="margin-top:1.25rem">Generated config</h4>
+      <pre id="xray-config" class="code-block">Loading…</pre>
+    </div>
+  </section>
+</main>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/settings.js"></script>
+</body>
+</html>{{end}}

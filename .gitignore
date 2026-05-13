@@ -1,0 +1,8 @@
+/vpn-proxy
+/data/
+*.db
+*.log
+.env
+.idea/
+.vscode/
+dist/
