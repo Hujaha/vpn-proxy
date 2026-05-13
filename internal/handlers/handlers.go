@@ -241,7 +241,42 @@ func Stats(c *gin.Context) {
 		"enabled":   enabled,
 		"ufw":       ufwStatus,
 		"ufw_avail": ufw.Available(),
+		"xray":      xray.GetStatus(),
 	})
+}
+
+func XrayStatus(c *gin.Context) {
+	c.JSON(http.StatusOK, xray.GetStatus())
+}
+
+type xrayInstallReq struct {
+	Force bool `json:"force"`
+}
+
+func InstallXray(c *gin.Context) {
+	var r xrayInstallReq
+	_ = c.ShouldBindJSON(&r)
+	msg, err := xray.Install(r.Force)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ok": true, "message": msg, "status": xray.GetStatus()})
+}
+
+func XrayService(c *gin.Context) {
+	action := c.Param("action")
+	if action == "start" || action == "restart" {
+		if err := xray.WriteConfig(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	if err := xray.ServiceCommand(action); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ok": true, "status": xray.GetStatus()})
 }
 
 func RestartXray(c *gin.Context) {

@@ -25,6 +25,16 @@ async function tick() {
 
     document.getElementById('i-ufw-avail').textContent = s.ufw_avail ? 'yes' : 'no';
     document.getElementById('i-ufw').textContent = s.ufw || '—';
+
+    const x = s.xray || {};
+    document.getElementById('x-installed').innerHTML = x.installed
+      ? '<span class="pill on">installed</span>'
+      : '<span class="pill off">not installed</span>';
+    document.getElementById('x-version').textContent = x.version || '—';
+    document.getElementById('x-running').innerHTML = x.running
+      ? '<span class="pill on">running</span>'
+      : '<span class="pill off">stopped</span>';
+    document.getElementById('x-path').textContent = x.path || '—';
   } catch (e) {
     console.warn(e);
   }
@@ -33,6 +43,27 @@ async function tick() {
 document.getElementById('restart-xray')?.addEventListener('click', async () => {
   try { await api.send('POST', '/api/xray/restart'); alert('Xray restarted'); }
   catch (e) { alert('Failed: ' + e.message); }
+});
+
+async function xrayAction(btn, fn, okMsg) {
+  btn.disabled = true;
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  try { await fn(); tick(); }
+  catch (e) { alert('Failed: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = orig; }
+}
+
+document.getElementById('xray-install')?.addEventListener('click', (e) =>
+  xrayAction(e.target, async () => {
+    if (!confirm('Download and install the latest Xray-core from GitHub?')) return;
+    const r = await api.send('POST', '/api/xray/install', { force: true });
+    alert(r.message || 'Done');
+  }));
+
+['start','restart','stop'].forEach(act => {
+  document.getElementById('xray-' + act)?.addEventListener('click', (e) =>
+    xrayAction(e.target, () => api.send('POST', '/api/xray/service/' + act)));
 });
 
 tick();
